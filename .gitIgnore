@@ -2,3 +2,29 @@
 *.yml
 *.yaml
 *.log
+images
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# macOS
+.DS_Store
+
+# Streamlit
+.streamlit/
+
+# Generated images
+images/
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
