@@ -3,8 +3,9 @@ from pdf_loader import (
     extract_text_from_pdf,
     extract_images_from_pdf,
     remove_after_conclusion,
-    extract_figure_captions
+    research_paper_score
 )
+from chunker import chunk_text
 
 st.set_page_config(
     page_title="paperHulk",
@@ -19,28 +20,44 @@ uploaded_file = st.file_uploader(
     type=["pdf"],
 )
 
+debug_mode = st.sidebar.checkbox(
+    "Debug mode",
+    value=False,
+)
+
 if uploaded_file:
     st.success(f"Uploaded: {uploaded_file.name}")
 
     try:
         extracted_text = extract_text_from_pdf(uploaded_file)
         cleaned_text = remove_after_conclusion(extracted_text)
-
+        score = research_paper_score(cleaned_text)
 
         if not cleaned_text:
             st.warning("No readable text found in this PDF.")
         else:
             st.success("Text extracted successfully!")
-            st.write(f"Extracted characters: {len(cleaned_text)}")
-            st.write(f"Estimated words: {len(cleaned_text.split())}")
+            if score >=4 and len(cleaned_text.split())>=2500:
+               st.success("Research Paper structure detected")
+               st.write(f"Extracted characters: {len(cleaned_text)}")
+               st.write(f"Estimated words: {len(cleaned_text.split())}")
+               st.subheader("Cleaned Extracted Text")
+               if debug_mode:
+                    st.text_area( "PDF Content",cleaned_text,height=400)
+               chunk_size = st.sidebar.number_input("Chunk size", min_value=1000,max_value=8000,value=2500,step=500)
+               overlap = st.sidebar.number_input("Chunk overlap", min_value=0, max_value=1000, value=200,step=100)
 
-            st.subheader("Cleaned Extracted Text")
-            st.text_area(
-                "PDF Content",
-                cleaned_text,
-                height=400,
-            )
+               chunks = chunk_text(cleaned_text, chunk_size=chunk_size, overlap=overlap)
 
+               st.write(f"Generated chunks: {len(chunks)}")
+               if debug_mode:
+                    with st.expander("View Chunks"):
+                        for index, chunk in enumerate(chunks, start=1):
+                            st.markdown(f"### Chunk {index}")
+                            st.text_area(f"Chunk {index}", chunk, height=200)
+            else:
+               st.warning("This PDF may not be a research paper, can not process it")
+  
         uploaded_file.seek(0)
         image_paths = extract_images_from_pdf(uploaded_file)
 

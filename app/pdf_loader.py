@@ -1,5 +1,4 @@
 import fitz 
-import pdfplumber
 import os
 import re
 
@@ -156,3 +155,25 @@ def extract_figure_captions(text: str) -> list[str]:
             captions.append(match.strip())
 
     return captions
+
+def research_paper_score(text: str) -> int:
+    text = text.lower()
+
+    keywords = [
+        "abstract",
+        "introduction",
+        "related work",
+        "methodology",
+        "results",
+        "discussion",
+        "conclusion",
+        "references",
+    ]
+
+    score = 0
+
+    for keyword in keywords:
+        if keyword in text:
+            score += 1
+
+    return score
