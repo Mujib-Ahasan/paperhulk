@@ -5,6 +5,7 @@ from pdf_loader import (
     remove_after_conclusion,
     research_paper_score
 )
+from ollama_client import generate_response
 from chunker import chunk_text
 
 st.set_page_config(
@@ -24,6 +25,31 @@ debug_mode = st.sidebar.checkbox(
     "Debug mode",
     value=False,
 )
+
+## this is for test purpose, this should be removed at final.
+st.sidebar.subheader("Local LLM Test")
+
+test_prompt = st.sidebar.text_area(
+    "Test prompt",
+    value="A Large Language Model (LLM) is an advanced AI system trained on massive datasets to process, " \
+    "understand, and generate human-like text. Powered by transformer architectures and deep learning, " \
+    "these models predict the most likely next words in a sequence to create fluent, context-aware " \
+    "responses, and power many modern generative AI applications."
+     "Transformer Architecture: The foundational neural network design behind modern LLMs. It enables the model to process large sequences of text simultaneously and track long-range dependencies."
+     "Self-Attention Mechanism: A mathematical technique within the transformer that allows the model to weigh the"
+      "importance of different words in a sentence relative to one another. This is how an LLM grasps complex context and nuance."
+     "Parameters & Training: Parameters are the adjustable elements within the models neural network. During pre-training,"
+     "the LLM analyzes petabytes of data—including books, websites, and code—to adjust these parameters and learn language syntax, facts, and reasoning." 
+)
+
+if st.sidebar.button("Test Ollama"):
+    with st.spinner("Testing Ollama..."):
+        response = generate_response(test_prompt)
+
+    st.sidebar.success("Ollama responded!")
+    st.sidebar.write(response)
+
+## this is for test purpose, this should be removed at final.
 
 if uploaded_file:
     st.success(f"Uploaded: {uploaded_file.name}")
