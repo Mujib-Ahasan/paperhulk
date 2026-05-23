@@ -1,5 +1,5 @@
 
-def chunk_text(text: str, chunk_size: int = 2500, overlap: int = 200) -> list[str]:
+def chunk_text(text: str, chunk_size: int, overlap: int) -> list[str]:
     if not text:
         return []
 

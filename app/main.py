@@ -5,8 +5,9 @@ from pdf_loader import (
     remove_after_conclusion,
     research_paper_score
 )
-from ollama_client import generate_response
 from chunker import chunk_text
+from config import CHUNK_SIZE, CHUNK_OVERLAP
+from summarizer import summarize_paper
 
 st.set_page_config(
     page_title="paperHulk",
@@ -25,31 +26,6 @@ debug_mode = st.sidebar.checkbox(
     "Debug mode",
     value=False,
 )
-
-## this is for test purpose, this should be removed at final.
-st.sidebar.subheader("Local LLM Test")
-
-test_prompt = st.sidebar.text_area(
-    "Test prompt",
-    value="A Large Language Model (LLM) is an advanced AI system trained on massive datasets to process, " \
-    "understand, and generate human-like text. Powered by transformer architectures and deep learning, " \
-    "these models predict the most likely next words in a sequence to create fluent, context-aware " \
-    "responses, and power many modern generative AI applications."
-     "Transformer Architecture: The foundational neural network design behind modern LLMs. It enables the model to process large sequences of text simultaneously and track long-range dependencies."
-     "Self-Attention Mechanism: A mathematical technique within the transformer that allows the model to weigh the"
-      "importance of different words in a sentence relative to one another. This is how an LLM grasps complex context and nuance."
-     "Parameters & Training: Parameters are the adjustable elements within the models neural network. During pre-training,"
-     "the LLM analyzes petabytes of data—including books, websites, and code—to adjust these parameters and learn language syntax, facts, and reasoning." 
-)
-
-if st.sidebar.button("Test Ollama"):
-    with st.spinner("Testing Ollama..."):
-        response = generate_response(test_prompt)
-
-    st.sidebar.success("Ollama responded!")
-    st.sidebar.write(response)
-
-## this is for test purpose, this should be removed at final.
 
 if uploaded_file:
     st.success(f"Uploaded: {uploaded_file.name}")
@@ -70,12 +46,14 @@ if uploaded_file:
                st.subheader("Cleaned Extracted Text")
                if debug_mode:
                     st.text_area( "PDF Content",cleaned_text,height=400)
-               chunk_size = st.sidebar.number_input("Chunk size", min_value=1000,max_value=8000,value=2500,step=500)
-               overlap = st.sidebar.number_input("Chunk overlap", min_value=0, max_value=1000, value=200,step=100)
 
-               chunks = chunk_text(cleaned_text, chunk_size=chunk_size, overlap=overlap)
+               chunks = chunk_text(cleaned_text, chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP)
+               if st.button("Generate Summary"):
+                    with st.spinner("Generating summary..."):
+                        summary = summarize_paper(chunks)
 
-               st.write(f"Generated chunks: {len(chunks)}")
+                    st.subheader("Final Summary")
+                    st.write(summary)
                if debug_mode:
                     with st.expander("View Chunks"):
                         for index, chunk in enumerate(chunks, start=1):
