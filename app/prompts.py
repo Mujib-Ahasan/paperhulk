@@ -1,4 +1,4 @@
-from config import CHUNK_SUMMARY_WORD_LIMIT
+from .config import CHUNK_SUMMARY_WORD_LIMIT
 
 def final_summary_prompt(combined_summary: str, mode: str = "technical") -> str:
     if mode == "simple":

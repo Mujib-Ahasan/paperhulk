@@ -1,5 +1,5 @@
-from ollama_client import generate_response
-from prompts import technical_summary_prompt, simple_summary_prompt, final_summary_prompt
+from .ollama_client import generate_response
+from .prompts import technical_summary_prompt, simple_summary_prompt, final_summary_prompt
 
 
 def summarize_chunk(chunk: str, mode: str = "technical") -> str:

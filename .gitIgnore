@@ -17,6 +17,8 @@ venv/
 # Streamlit
 .streamlit/
 
+streamlit.py
+
 # Generated images
 images/
 

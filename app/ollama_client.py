@@ -1,5 +1,5 @@
 import ollama
-from config import MODEL_NAME 
+from .config import MODEL_NAME 
 
 def generate_response(prompt: str) -> str:
     try:
