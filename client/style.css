@@ -1,0 +1,108 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: white;
+  color: #111827;
+}
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: "Caveat", cursive;
+  font-size: 88px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #111827;
+}
+
+.hero p {
+  color: #6b7280;
+  font-size: 18px;
+}
+
+#summary-options {
+  margin-top: 28px;
+}
+
+.folder-wrapper {
+  display: block;
+  cursor: pointer;
+  margin-top: 40px;
+}
+
+.folder-image {
+  width: 260px;
+  transition: transform 0.2s ease;
+}
+
+.folder-image:hover {
+  transform: scale(1.04);
+}
+
+#selected-file {
+  margin-top: 16px;
+  font-weight: 500;
+  color: #374151;
+}
+
+select {
+  margin-top: 28px;
+  width: 260px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+}
+
+button {
+  display: block;
+  margin: 18px auto 0;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 14px;
+  background: #111827;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+#status {
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.result-card {
+  margin-top: 48px;
+  background: #f9fafb;
+  border-radius: 24px;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+}
+
+.hidden {
+  display: none;
+}
+
+pre {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-family: inherit;
+}
