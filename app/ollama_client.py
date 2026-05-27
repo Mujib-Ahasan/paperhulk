@@ -16,4 +16,4 @@ def generate_response(prompt: str) -> str:
         return response["message"]["content"]
 
     except Exception as e:
-        return f"Failed to connect with Ollama: {e}"
+        raise RuntimeError(f"Failed to connect with Ollama: {e}") from e
