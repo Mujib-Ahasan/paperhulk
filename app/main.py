@@ -1,6 +1,8 @@
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.concurrency import run_in_threadpool
 from tempfile import NamedTemporaryFile
+from datetime import datetime
 
 from .pdf_loader import (
     extract_text_from_pdf, 
@@ -8,7 +10,7 @@ from .pdf_loader import (
     research_paper_score
     )
 from .chunker import chunk_text
-from .summarizer import summarize_chunks
+from .summarizer import summarize_paper
 from .config import (
     MAX_WORDS,
     MIN_WORDS,
@@ -43,10 +45,7 @@ def health_check():
 
 
 @app.post("/summarize")
-async def summarize_pdf(
-    file: UploadFile = File(...),
-    mode: str = Form("normal"),
-):
+async def summarize_pdf(file: UploadFile = File(...), mode: str = Form("normal"), provider: str = Form("ollama")):
     logger.debug(f"Received summarize request")
 
     if not file.filename.endswith(".pdf"):
@@ -90,15 +89,17 @@ async def summarize_pdf(
         chunks = chunk_text(cleaned_text, CHUNK_SIZE, CHUNK_OVERLAP)
         logger.debug(f"Chunking completed successfully: {len(chunks)} chunks created")
 
-        summary = summarize_chunks(chunks, mode=mode)
+        summary = await run_in_threadpool(summarize_paper, chunks, mode, provider,)
         logger.debug("Summarization completed successfully")
 
         return {
             "filename": file.filename,
             "mode": mode,
+            "provider": provider,
             "word_count": len(cleaned_text.split()),
             "chunk_count": len(chunks),
             "summary": summary,
+            "timestamp": datetime.now().isoformat(),
         }
 
     except HTTPException:
