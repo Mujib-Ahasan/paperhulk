@@ -36,19 +36,58 @@
 
      <div id="summary-options" class="hidden">
 
-     <select id="mode">
-       <option value="normal">Normal Summary</option>
-       <option value="eli10">Explain Like I'm 10</option>
-     </select>
-
-    <button type="submit">
-    Summarize Paper
+    <div class="mode-cards">
+      <button type="button" class="mode-card active" data-mode="normal">
+      <span>Normal Summary</span>
+      <small>Structured technical summary</small>
     </button>
+
+  <button type="button" class="mode-card" data-mode="eli10">
+    <span>Explain Like I'm 10</span>
+    <small>Simple child-friendly explanation</small>
+  </button>
+</div>
+
+<input type="hidden" id="mode" value="normal" />
+
+<div id="provider-options" class="hidden">
+  <div class="provider-cards">
+    <button type="button" class="provider-card active" data-provider="ollama">
+      <span>🦙 Ollama</span>
+      <small>Run locally on your machine</small>
+    </button>
+
+    <button type="button" class="provider-card" data-provider="gemini">
+      <span>✨ Gemini</span>
+      <small>Use Google Gemini API</small>
+    </button>
+  </div>
+</div>
+
+<input type="hidden" id="provider" value="ollama" />
+
+<button type="submit" class="summarize-btn">
+  Summarize Paper
+</button>
+
 
     </div>
     </form>
 
     <p id="status"></p>
+    <div id="progress-wrapper" class="hidden">
+      <p id="progress-text">Preparing...</p>
+      <div class="progress-track">
+    <div id="progress-bar"></div>
+    </div>
+
+    <button
+    id="cancel-button"
+    class="cancel-btn hidden"
+    type="button">
+    Cancel Summarization
+  </button>
+   </div>
 
   </section>
 

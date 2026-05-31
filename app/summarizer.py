@@ -22,7 +22,7 @@ def summarize_chunk(chunk: str, mode: str = "technical", provider: str = "ollama
     return summary.strip()
 
 
-def summarize_chunks(chunks: list[str], mode: str = "technical", provider: str = "ollama",) -> list[str]:
+def summarize_chunks(chunks: list[str], mode: str = "technical", provider: str = "ollama", progress_callback=None,) -> list[str]:
     """Summarize all chunks one by one."""
 
     chunk_summaries = []
@@ -34,6 +34,9 @@ def summarize_chunks(chunks: list[str], mode: str = "technical", provider: str =
             chunk_summaries.append(
                 f"Chunk {index} Summary:\n{summary}"
             )
+
+        if progress_callback:
+            progress_callback(index)
 
     return chunk_summaries
 
@@ -53,12 +56,25 @@ def generate_final_summary(chunk_summaries: list[str], mode: str = "technical", 
     return final_summary.strip()
 
 
-def summarize_paper(chunks: list[str], mode: str = "technical", provider: str = "ollama",) -> str:
+def summarize_paper(chunks: list[str], mode: str = "technical", provider: str = "ollama", progress_callback=None,) -> str:
     """Full paper summarization workflow."""
 
     if not chunks:
         return "No chunks found to summarize."
 
-    chunk_summaries = summarize_chunks(chunks, mode, provider)
+    chunk_summaries = summarize_chunks(
+        chunks,
+        mode,
+        provider,
+        progress_callback,)
 
-    return generate_final_summary(chunk_summaries, mode, provider)
+    final_summary = generate_final_summary(
+        chunk_summaries,
+        mode,
+        provider,
+    )
+
+    if progress_callback:
+        progress_callback(len(chunks) + 1)
+
+    return final_summary
