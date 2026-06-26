@@ -27,6 +27,16 @@ const summarizeButton = document.querySelector(".summarize-btn");
 let activeJobId = null;
 let activeSocket = null;
 
+const saveButton = document.getElementById("save-summary");
+const saveActions = document.getElementById("save-actions");
+const saveFormat = document.getElementById("save-format");
+
+let latestSummary = "";
+let latestFilename = "summary";
+let latestMode = "normal";
+
+const shareButton = document.getElementById("share-summary");
+
 fileInput.addEventListener("change", () => {
   if (fileInput.files.length > 0) {
     selectedFile.textContent = fileInput.files[0].name;
@@ -91,6 +101,7 @@ form.addEventListener("submit", async (event) => {
   resultCard.classList.add("hidden");
   summaryOutput.textContent = "";
   metadata.innerHTML = "";
+  saveActions.classList.add("hidden");
 
   progressWrapper.classList.remove("hidden");
   progressBar.style.width = "0%";
@@ -169,6 +180,15 @@ form.addEventListener("submit", async (event) => {
         activeJobId = null;
         activeSocket = null;
 
+        latestSummary = progress.summary;
+        latestFilename = progress.filename
+          ? progress.filename.replace(".pdf", "")
+          : "summary";
+        latestMode = progress.mode;
+
+        saveActions.classList.remove("hidden");
+        resultCard.classList.remove("hidden");
+
         socket.close();
       }
 
@@ -217,5 +237,126 @@ form.addEventListener("submit", async (event) => {
 
     activeJobId = null;
     activeSocket = null;
+  }
+});
+
+saveButton.addEventListener("click", () => {
+  if (!latestSummary) {
+    statusText.textContent = "No summary available to save.";
+    return;
+  }
+
+  const selectedFormat = saveFormat.value;
+  const baseName = `${latestFilename}-${latestMode}-summary`;
+
+  const content = `PaperHulk Summary
+
+File: ${latestFilename}
+Mode: ${latestMode}
+
+---
+
+${latestSummary}
+`;
+
+  if (selectedFormat === "txt") {
+    downloadFile(`${baseName}.txt`, content, "text/plain");
+    return;
+  }
+
+  if (selectedFormat === "md") {
+    const markdownContent = `# PaperHulk Summary
+
+**File:** ${latestFilename}
+
+**Mode:** ${latestMode}
+
+---
+
+${latestSummary}
+`;
+
+    downloadFile(`${baseName}.md`, markdownContent, "text/markdown");
+    return;
+  }
+
+  if (selectedFormat === "pdf") {
+    const printWindow = window.open("", "_blank");
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${baseName}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 40px;
+              line-height: 1.6;
+            }
+
+            h1 {
+              margin-bottom: 8px;
+            }
+
+            pre {
+              white-space: pre-wrap;
+              font-family: Arial, sans-serif;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>PaperHulk Summary</h1>
+          <p><strong>File:</strong> ${latestFilename}</p>
+          <p><strong>Mode:</strong> ${latestMode}</p>
+          <hr />
+          <pre>${latestSummary}</pre>
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.print();
+  }
+});
+
+function downloadFile(filename, content, mimeType) {
+  const blob = new Blob([content], {
+    type: mimeType,
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+}
+
+shareButton.addEventListener("click", async () => {
+  if (!latestSummary) {
+    statusText.textContent = "No summary available to share.";
+    return;
+  }
+
+  const shareData = {
+    title: "PaperHulk Summary",
+    text: latestSummary,
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(latestSummary);
+      statusText.textContent =
+        "Sharing is not supported. Summary copied to clipboard.";
+    }
+  } catch (err) {
+    statusText.textContent = "Sharing cancelled.";
   }
 });

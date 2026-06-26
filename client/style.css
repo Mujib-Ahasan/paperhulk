@@ -276,3 +276,36 @@ pre {
 .cancel-btn:hover {
   background: #dc2626;
 }
+
+.save-button {
+  margin-top: 24px;
+  background: #16a34a;
+}
+
+.save-button:hover {
+  background: #15803d;
+}
+
+.save-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.save-actions select {
+  width: 180px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.share-button {
+  background: #2563eb;
+}
+
+.share-button:hover {
+  background: #1d4ed8;
+}
